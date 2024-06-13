@@ -1,22 +1,21 @@
 #!/usr/bin/python3
-""" Function that deploys """
+""" Fabric script that deletes out-of-date archives """
 from fabric.api import *
 
-
-env.hosts = ['44.210.150.159', '35.173.47.15']
+env.hosts = ['18.204.9.11', '18.233.66.83']
 env.user = "ubuntu"
 
 
 def do_clean(number=0):
-    """ CLEANS """
+    """ Deletes out-of-date archives """
 
-    number = int(number)
+    number = 1 if int(number) == 0 else int(number)
+    number += 1
 
-    if number == 0:
-        number = 2
-    else:
-        number += 1
-
+    # Delete local archives except the most recent 'number' ones
     local('cd versions ; ls -t | tail -n +{} | xargs rm -rf'.format(number))
+
+    # Delete remote archives except the most recent 'number' ones
     path = '/data/web_static/releases'
     run('cd {} ; ls -t | tail -n +{} | xargs rm -rf'.format(path, number))
+

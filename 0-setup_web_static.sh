@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
-# Setup a web servers for the deployment of web_static.
-apt update -y
-apt install -y nginx
+# sets up the web servers for the deployment of web_static
+
+# install Nginx 
+apt-get -y update
+apt-get -y install nginx
+
+# create folders if they don't already exist
 mkdir -p /data/web_static/releases/test/
 mkdir -p /data/web_static/shared/
-echo "<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <p>Nginx server test</p>
-  </body>
-</html>" | tee /data/web_static/releases/test/index.html
+
+# create fake HTML file
+echo "Holberton School" > /data/web_static/releases/test/index.html
+
+# create a symbolic link
 ln -sf /data/web_static/releases/test/ /data/web_static/current
-chown -R ubuntu:ubuntu /data
-sudo sed -i '39 i\ \tlocation /hbnb_static {\n\t\talias /data/web_static/current;\n\t}\n' /etc/nginx/sites-enabled/default
-sudo service nginx restart
+
+# give ownership of the /data/ folder to the ubuntu user and group
+chown -R ubuntu /data/
+chgrp -R ubuntu /data/
+
+# update the Nginx configuration to serve the content of /data/web_static/current/ to hbnb_static
+sed -i '41i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n' /etc/nginx/sites-available/default
+
+# restart Nginx
+service nginx restart
+
